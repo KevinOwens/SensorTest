@@ -55,7 +55,7 @@ public class MainActivity extends Activity implements ScanManager.ScanListener, 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private final static int WRITING_PERIOD = 1000 * LOC_UPDATE_INTERVAL_IN_SECONDS;
     public static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath() +
-            "/ricardo/";
+            "/Beacon Data/";
 
     private TextView mStatus;
 
