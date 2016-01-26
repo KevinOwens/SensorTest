@@ -118,6 +118,8 @@ public class MainActivity extends Activity implements ScanManager.ScanListener, 
                     record.put("p", gpsArray);
                     record.put("a", String.format("%.1f", mAccuracy));
                     record.put("accX", mX);
+                    record.put("accY", mY);
+                    record.put("accZ", mZ);
                     //record.put("accTS", mTimestamp);//RP commented out, don't need this.
                     record.put("b", jsonArray);
                 } catch (JSONException e) {
