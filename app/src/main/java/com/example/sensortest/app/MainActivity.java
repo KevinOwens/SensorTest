@@ -75,7 +75,7 @@ public class MainActivity extends Activity implements ScanManager.ScanListener, 
     private float mZ;
     private long mTimestamp;
 
-    private String mImei;
+    private static String mImei;
     private double mLat = 0, mLng = 0;
     private float mAccuracy = 0;
     private String mLastFileName;
@@ -118,8 +118,8 @@ public class MainActivity extends Activity implements ScanManager.ScanListener, 
                     record.put("p", gpsArray);
                     record.put("a", String.format("%.1f", mAccuracy));
                     record.put("accX", mX);
-                    record.put("accY", mY);
-                    record.put("accZ", mZ);
+                    record.put("accY", mY);// RP Added 9/30/16
+                    record.put("accZ", mZ);// RP Added 9/30/16
                     //record.put("accTS", mTimestamp);//RP commented out, don't need this.
                     record.put("b", jsonArray);
                 } catch (JSONException e) {
@@ -334,7 +334,8 @@ public class MainActivity extends Activity implements ScanManager.ScanListener, 
         Date now = calendar.getTime();
         Log.d("Kun", "now is " + now.toString());
         Timestamp currTime = new Timestamp(now.getTime());
-        String fileTimestamp = new SimpleDateFormat("yyyy-MM-dd-kk").format(currTime);
+        String fileTimestamp = new  SimpleDateFormat("yyyy-MM-dd").format(currTime) + '_' + mImei;//"Phone A1" ;
+        //fileTimestamp = fileTimestamp +  " Phone1";
         Log.d("Kun", "timestamp is " + fileTimestamp);
         return fileTimestamp;
     }
