@@ -3,6 +3,7 @@ package com.example.sensortest.app;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class ScanManager {
     private static BluetoothAdapter sBluetoothAdapter;
     private static boolean sScanning = false;
 
+    private static final int BLE_SCAN_REST_PERIOD_MS = 10;
+    private static final int BLE_SCAN_SIGNAL_COLLECTION_PERIOD_MS = 500;
+
     private static BluetoothAdapter.LeScanCallback sLeScanCallback = new BluetoothAdapter
             .LeScanCallback() {
         @Override
@@ -26,6 +30,21 @@ public class ScanManager {
             for (ScanListener l : sListeners) {
                 l.onDevicesScanned(device, rssi, scanRecord);
             }
+        }
+    };
+
+    private static Runnable endSignalCollection = new Runnable() {
+        @Override
+        public void run() {
+            ScanManager.stopScan();
+            new Handler().postDelayed(restartScanRunnable, BLE_SCAN_REST_PERIOD_MS);
+        }
+    };
+
+    private static  Runnable restartScanRunnable = new Runnable() {
+        @Override
+        public void run() {
+            ScanManager.startScan();
         }
     };
 
@@ -59,6 +78,9 @@ public class ScanManager {
      * Starts scanning for temperature data. Call {@link #stopScan()} when done to save the power.
      */
     public static void startScan() {
+
+        constructScanRestartRunnable();
+
         // Stops scanning after a pre-defined scan period.
         if (sBluetoothAdapter == null) return;
         if (sScanning) return;
@@ -69,6 +91,8 @@ public class ScanManager {
         sScanning = true;
         for (ScanListener l : sListeners)
             l.onScanStarted();
+
+        new Handler().postDelayed(endSignalCollection, BLE_SCAN_SIGNAL_COLLECTION_PERIOD_MS);
     }
 
     /**
@@ -82,5 +106,23 @@ public class ScanManager {
         for (ScanListener l : sListeners)
             l.onScanStopped();
         sScanning = false;
+    }
+
+    public static void fullStopScan(){
+        restartScanRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("SCAN_MNGR", "BLE Scanning has stopped");
+            }
+        };
+    }
+
+    private static void constructScanRestartRunnable(){
+        restartScanRunnable = new Runnable() {
+            @Override
+            public void run() {
+                ScanManager.startScan();
+            }
+        };
     }
 }
